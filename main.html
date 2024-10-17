@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Data Submission</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #4CAF50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+    <!-- Loading Section -->
+    <div id="loading" class="flex flex-col justify-center items-center min-h-screen">
+        <div class="spinner"></div>
+        <span id="loading-message" class="mt-2 text-lg">Submitting Data...</span>
+    </div>
+
+    <!-- Success Section -->
+    <div id="success" class="hidden flex flex-col justify-center items-center min-h-screen">
+        <i class="fas fa-check-circle text-green-500 text-6xl"></i>
+        <span class="mt-2 text-lg font-bold text-green-500">Data Submitted Successfully!</span>
+    </div>
+
+    <!-- Student Data Table -->
+    <div id="student-data" class="hidden">
+        <h1 class="text-2xl font-bold mb-4">Marksheet</h1>
+        <table class="w-full border-collapse border border-gray-400 text-sm">
+            <thead>
+                <tr>
+                    <th class="border border-gray-400 p-2">Roll No.</th>
+                    <th class="border border-gray-400 p-2">Name</th>
+                    <th class="border border-gray-400 p-2">Course Concepts</th>
+                    <th class="border border-gray-400 p-2">Methodology</th>
+                    <th class="border border-gray-400 p-2">Schematic</th>
+                    <th class="border border-gray-400 p-2">Performance</th>
+                    <th class="border border-gray-400 p-2">Total</th>
+                </tr>
+            </thead>
+            <tbody id="student-tbody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            simulateSubmission();
+        });
+
+        function simulateSubmission() {
+            setTimeout(() => {
+                document.getElementById('loading-message').innerText = 'Marksheet';
+            }, 2000);  // After 2 seconds, change the message to "Marksheet"
+
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');  // Hide the spinner
+                document.getElementById('success').classList.remove('hidden');  // Show success message
+            }, 5000);  // After 5 seconds, show success message and fetch data
+
+            setTimeout(() => {
+                document.getElementById('success').classList.add('hidden');  // Hide success message
+                fetchStudentData();  // Fetch and display the data
+            }, 7000);  // After 7 seconds, fetch the data and show the marksheet
+        }
+
+        function fetchStudentData() {
+            // Assuming the data is fetched from the backend API
+            fetch('http://localhost:4000/students')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById('student-tbody');
+                    data.students.forEach(student => {
+                        const row = document.createElement('tr');
+
+                        row.innerHTML = `
+                            <td class="border border-gray-400 p-2">${student.rollNo}</td>
+                            <td class="border border-gray-400 p-2">${student.name}</td>
+                            <td class="border border-gray-400 p-2">${student.courseConcepts}</td>
+                            <td class="border border-gray-400 p-2">${student.methodology}</td>
+                            <td class="border border-gray-400 p-2">${student.schematic}</td>
+                            <td class="border border-gray-400 p-2">${student.performance}</td>
+                            <td class="border border-gray-400 p-2">${student.total}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+
+                    // Show the student data section
+                    document.getElementById('student-data').classList.remove('hidden');
+                })
+                .catch(error => {
+                    console.error('Error fetching student data:', error);
+                });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Sheet</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e9ecef;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            max-width: 100px;
+            margin-bottom: 10px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #333;
+        }
+        .content {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .content h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+        .info-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        .info-item label {
+            font-weight: bold;
+            color: #333;
+            display: block;
+        }
+        .info-item span {
+            font-size: 1.1em;
+            color: #555;
+        }
+        .info-item .info-header {
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="images.jpeg" alt="Logo">
+            <h1>Student Mark Sheet</h1>
+        </div>
+        <div class="content">
+            <div class="info-item">
+                <span class="info-header">Roll No:</span>
+                <span id="rollNo"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-header">Name:</span>
+                <span id="name"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-header">Course Concepts:</span>
+                <span id="courseConcepts"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-header">Methodology:</span>
+                <span id="methodology"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-header">Schematic:</span>
+                <span id="schematic"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-header">Performance:</span>
+                <span id="performance"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-header">Total:</span>
+                <span id="total"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-header">Subject:</span>
+                <span id="subjectName"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-header">Subject Code:</span>
+                <span id="subjectCode"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-header">CA Activity:</span>
+                <span id="caActivity"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-header">CA Marks Out Of:</span>
+                <span id="caMarksOutOf"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = async function() {
+            const params = new URLSearchParams(window.location.search);
+            const rollNo = params.get('rollNo');
+
+            if (rollNo) {
+                document.getElementById('rollNo').textContent = rollNo;
+                
+                try {
+                    const response = await fetch(`http://localhost:4000/get-student-data?rollNo=${rollNo}`);
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        document.getElementById('name').textContent = data.name;
+                        document.getElementById('courseConcepts').textContent = data.courseConcepts;
+                        document.getElementById('methodology').textContent = data.methodology;
+                        document.getElementById('schematic').textContent = data.schematic;
+                        document.getElementById('performance').textContent = data.performance;
+                        document.getElementById('total').textContent = data.total;
+                        document.getElementById('subjectName').textContent = data.subjectName;
+                        document.getElementById('subjectCode').textContent = data.subjectCode;
+                        document.getElementById('caActivity').textContent = data.caActivity;
+                        document.getElementById('caMarksOutOf').textContent = data.caMarksOutOf;
+                    } else {
+                        document.getElementById('data').innerHTML = `<p>${data.message}</p>`;
+                    }
+                } catch (error) {
+                    console.error('Error fetching student data:', error);
+                    document.getElementById('data').innerHTML = '<p>An error occurred while fetching data.</p>';
+                }
+            } else {
+                document.getElementById('data').innerHTML = '<p>Roll number not provided</p>';
+            }
+        }
+    </script>
+</body>
+</html>

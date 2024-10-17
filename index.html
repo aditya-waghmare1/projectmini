@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Continuous Assessment Sheet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script>
+        function addStudentRow() {
+            const tableBody = document.querySelector("tbody");
+            const newRow = document.createElement("tr");
+
+            const rollNoCell = document.createElement("td");
+            rollNoCell.className = "border border-gray-400 p-2";
+            rollNoCell.innerText = tableBody.rows.length + 1;
+            newRow.appendChild(rollNoCell);
+
+            const nameCell = document.createElement("td");
+            nameCell.className = "border border-gray-400 p-2";
+            const nameInput = document.createElement("input");
+            nameInput.type = "text";
+            nameInput.className = "w-full border border-gray-300 p-1";
+            nameCell.appendChild(nameInput);
+            newRow.appendChild(nameCell);
+
+            const fields = ["Application of course concepts", "Methodology/Design steps", "Schematic/Drawing/Graphs/Charts", "Overall Regularity/Performance"];
+            fields.forEach((field, index) => {
+                const cell = document.createElement("td");
+                cell.className = "border border-gray-400 p-2";
+                const select = document.createElement("select");
+                select.className = "w-full border border-gray-300 p-1";
+                select.innerHTML = `<option value="1">1</option><option value="2">2</option><option value="AB">AB</option>`;
+                if (index === 3) {
+                    select.innerHTML = `<option value="Excellent">Excellent</option><option value="Average">Average</option>`;
+                }
+                select.onchange = function() {
+                    if (this.value === "AB") {
+                        this.classList.add("bg-red-500", "text-white");
+                    } else {
+                        this.classList.remove("bg-red-500", "text-white");
+                    }
+                };
+                cell.appendChild(select);
+                newRow.appendChild(cell);
+            });
+
+            const totalCell = document.createElement("td");
+            totalCell.className = "border border-gray-400 p-2";
+            const totalInput = document.createElement("input");
+            totalInput.type = "text";
+            totalInput.className = "w-full border border-gray-300 p-1";
+            totalCell.appendChild(totalInput);
+            newRow.appendChild(totalCell);
+
+            tableBody.appendChild(newRow);
+        }
+
+        function submitData() {
+            const subjectName = document.getElementById('subject-name').value;
+            const subjectCode = document.getElementById('subject-code').value;
+            const caActivity = document.getElementById('ca-activity').value;
+            const caMarksOutOf = document.getElementById('ca-marks-outof').value;
+
+            const tableBody = document.querySelector("tbody");
+            const students = [];
+
+            tableBody.querySelectorAll("tr").forEach(row => {
+                const rollNo = row.cells[0].innerText;
+                const name = row.cells[1].querySelector("input").value;
+                const courseConcepts = row.cells[2].querySelector("select").value;
+                const methodology = row.cells[3].querySelector("select").value;
+                const schematic = row.cells[4].querySelector("select").value;
+                const performance = row.cells[5].querySelector("select").value;
+                const total = row.cells[6].querySelector("input").value;
+
+                students.push({
+                    rollNo,
+                    name,
+                    courseConcepts,
+                    methodology,
+                    schematic,
+                    performance,
+                    total
+                });
+            });
+
+            fetch('http://localhost:4000/submit-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    subjectName, 
+                    subjectCode, 
+                    caActivity, 
+                    caMarksOutOf, 
+                    students 
+                })
+            }).then(response => {
+                if (response.ok) {
+                    alert('Do you want submit');
+                    // Redirect to main.html after successful submission
+                    window.location.href = 'main.html';
+                } else {
+                    alert('Failed to submit data');
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                alert('Error submitting data');
+            });
+        }
+    </script>
+</head>
+<body class="bg-white p-4">
+    <div class="text-center mb-4">
+        <img src="images.jpeg" alt="Institute Logo" style="width: 100px; height: 100px;">
+        <h1 class="text-lg font-bold">Bajaj Institute of Technology, Wardha</h1>
+        <h2 class="text-md">Department of Computer Engineering</h2>
+        <h3 class="text-md">Continuous Assessment Sheet</h3>
+    </div>
+    <table class="w-full border-collapse border border-gray-400 text-sm">
+        <thead>
+            <tr>
+                <th colspan="2" class="border border-gray-400 p-2">Subject</th>
+                <td colspan="2" class="border border-gray-400 p-2">
+                    <input type="text" id="subject-name" class="w-full border border-gray-300 p-1">
+                </td>
+                <td class="border border-gray-400 p-2">
+                    <th colspan="2" class="border border-gray-400 p-2">Subject Code</th>
+                </td>
+                <th class="border border-gray-400 p-2">
+                    <input type="text" id="subject-code" class="w-full border border-gray-300 p-1">
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2" class="border border-gray-400 p-2">CA Activity</td>
+                <td colspan="2" class="border border-gray-400 p-2">
+                    <select id="ca-activity" class="w-full border border-gray-300 p-1">
+                        <option value="CA-I (I)">CA-I (I)</option>
+                        <option value="CA-I (II)">CA-I (II)</option>
+                        <option value="Sessional">Sessional</option>
+                    </select>
+                </td>
+                <th class="border border-gray-400 p-2">CA Marks Out of</th>
+                <td colspan="5" class="border border-gray-400 p-2">
+                    <input type="text" id="ca-marks-outof" class="w-full border border-gray-300 p-1" value="5">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="8" class="border border-gray-400 p-2 bg-yellow-300 text-center">Rubrics: Course Project</td>
+            </tr>
+            <tr>
+                <th class="border border-gray-400 p-2">Roll No.</th>
+                <th class="border border-gray-400 p-2">Name of Students</th>
+                <th class="border border-gray-400 p-2">Application of course concepts in the project</th>
+                <th class="border border-gray-400 p-2">Methodology/Design steps followed</th>
+                <th class="border border-gray-400 p-2">Schematic/Drawing/Graphs/Charts</th>
+                <th class="border border-gray-400 p-2">Overall Regularity/Performance</th>
+                <th class="border border-gray-400 p-2">Total</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <div class="flex justify-end my-2">
+        <button onclick="addStudentRow()" class="bg-blue-500 text-white px-4 py-2 rounded">Add Row</button>
+    </div>
+
+    <div class="flex justify-center my-4">
+        <button onclick="submitData()" class="bg-green-500 text-white px-6 py-3 rounded">Submit</button>
+    </div>
+</body>
+</html>
